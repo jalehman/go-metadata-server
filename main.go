@@ -26,7 +26,7 @@ type result struct {
 	error error
 }
 
-func gzipFile(file *os.File) (int64, error) {
+func gzippedSize(file *os.File) (int64, error) {
 	var buf bytes.Buffer
 	gz := gzip.NewWriter(&buf)
 	defer gz.Close()
@@ -98,7 +98,7 @@ func filepathToJSONMetadata(path string, resultChan chan result) {
 		return
 	}
 
-	gzippedSize, err := gzipFile(file)
+	gzippedSize, err := gzippedSize(file)
 	if err != nil {
 		resultChan <- result{FileMetadata{}, err}
 		return
