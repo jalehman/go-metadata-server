@@ -64,7 +64,7 @@ func filepathToJSONMetadata(path string, resultChan chan result) {
 		}
 
 		var wg = sync.WaitGroup{}
-		c := make(chan result)
+		c := make(chan result, len(files))
 
 		for _, file := range files {
 			wg.Add(1)
@@ -121,8 +121,7 @@ func fileMetadataHandler(w http.ResponseWriter, r *http.Request) {
 
 	path := filepath.Join(dir, r.URL.Path)
 
-	// create a channel to receive the results on
-	c := make(chan result)
+	c := make(chan result, 1)
 	go filepathToJSONMetadata(path, c)
 	res := <-c
 
