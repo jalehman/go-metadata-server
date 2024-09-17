@@ -57,11 +57,6 @@ func filepathToJSONMetadata(path string, resultChan chan result) {
 	}
 
 	if fileInfo.IsDir() {
-		// get all files in the directory
-
-		// XX is it necessary to check the error here? i'd think this
-		// would be caught with the call to os.Stat when attempting to
-		// open the file
 		files, err := os.ReadDir(path)
 		if err != nil {
 			resultChan <- result{FileMetadata{}, err}
@@ -75,7 +70,7 @@ func filepathToJSONMetadata(path string, resultChan chan result) {
 			wg.Add(1)
 			go func(f os.DirEntry) {
 				defer wg.Done()
-			filepathToJSONMetadata(filepath.Join(path, file.Name()), c)
+				filepathToJSONMetadata(filepath.Join(path, file.Name()), c)
 			}(file)
 		}
 
@@ -149,14 +144,6 @@ func fileMetadataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// To learn by doing, here’s a small, weird project: make an HTTP server
-	// that, when queried for a file, returns a JSON object containing the
-	// file’s last modified date and the large it would be when gzipped.
-	// Extra credit: if the path is a directory, return the same info for
-	// all the files in the directory, using goroutines to compute it in
-	// parallel.
-
 	http.HandleFunc("/", fileMetadataHandler)
-
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
